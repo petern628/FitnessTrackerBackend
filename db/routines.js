@@ -50,7 +50,7 @@ async function getAllRoutines() {
   JOIN users ON routines."creatorId" = users.id
   `);
 
-    console.log('____________________________________', routines);
+    // console.log('____________________________________', routines);
     const { rows: activities } = await client.query(`
   SELECT activities.*, routine_activities.id 
   AS "routineActivityId", routine_activities."routineId", routine_activities.duration, routine_activities.count
@@ -72,7 +72,16 @@ async function getAllRoutines() {
   }
 }
 
-async function getAllPublicRoutines() { }
+async function getAllPublicRoutines() {
+  try {
+    const publicRoutines = await getAllRoutines();
+    publicRoutines = publicRoutines.filter(x => x.isPublic == true);
+
+    return publicRoutines;
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function getAllRoutinesByUser({ username }) { }
 
