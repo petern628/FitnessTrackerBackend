@@ -1,4 +1,7 @@
+/* eslint-disable no-useless-catch */
 const client = require("./client");
+const attachActivitiesToRoutines = require("./activities");
+
 
 async function createRoutine({ creatorId, isPublic, name, goal }) {
   try {
@@ -14,7 +17,7 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
   }
 }
 
-async function getRoutineById(id) {}
+async function getRoutineById(id) { }
 
 async function getRoutinesWithoutActivities() {
   try {
@@ -28,19 +31,46 @@ async function getRoutinesWithoutActivities() {
   }
 }
 
-async function getAllRoutines() {}
+async function getAllRoutines() {
+  try {
+    const { rows: routines } = await client.query(`
+  SELECT routines.*, users.username AS "creatorName"
+  FROM routines
+  JOIN users ON routines."creatorId" = users.id
+  `);
 
-async function getAllPublicRoutines() {}
+    const { rows: activities } = await client.query(`
+  SELECT activities.*, routine_activities.id 
+  AS "routineActivityId", routine_activities."routineId", routine_activities.duration, routine_activities.count
+  FROM activities
+  JOIN routine_activities
+  ON routine_activities."activityId" = activities.id
+  `);
+    // console.log('____________________________________', activities);
+    for (const routine of routines) {
+      const activitiesToAdd = activities.filter(
+        (activity) => activity.routineId === routine.id
+      );
 
-async function getAllRoutinesByUser({ username }) {}
+      routine.activities = activitiesToAdd;
+    }
+    return routines;
+  } catch (error) {
+    throw error;
+  }
+}
 
-async function getPublicRoutinesByUser({ username }) {}
+async function getAllPublicRoutines() { }
 
-async function getPublicRoutinesByActivity({ id }) {}
+async function getAllRoutinesByUser({ username }) { }
 
-async function updateRoutine({ id, ...fields }) {}
+async function getPublicRoutinesByUser({ username }) { }
 
-async function destroyRoutine(id) {}
+async function getPublicRoutinesByActivity({ id }) { }
+
+async function updateRoutine({ id, ...fields }) { }
+
+async function destroyRoutine(id) { }
 
 module.exports = {
   getRoutineById,

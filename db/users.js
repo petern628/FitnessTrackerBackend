@@ -4,12 +4,13 @@ const client = require("./client");
 
 // user functions
 async function createUser({ username, password }) {
+
   try {
     const { rows: [user] } = await client.query(`
       INSERT INTO users(username, password) 
       VALUES($1, $2) 
       ON CONFLICT (username) DO NOTHING 
-      RETURNING *;`, [username, password]);
+      RETURNING username;`, [username, password]);
 
     return user;
   } catch (error) {
@@ -25,6 +26,16 @@ async function getUser({ username, password }) {
       SELECT *
       FROM users
 
+  try {
+    const { rows: [user] } = await client.query(`
+    SELECT username, password
+    FROM users;
+    `)
+    console.log(user, "HELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+    return user;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getUserById(userId) {
