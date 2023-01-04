@@ -3,14 +3,16 @@ const client = require("./client");
 // database functions
 
 // user functions
-async function createUser({ username, password }) {
 
+// MAN HOW YA'LL GONNA NOT RETURN THE ID IN THIS AND
+// THEN  USE IT ON A TEST CMON BRUH
+async function createUser({ username, password }) {
   try {
     const { rows: [user] } = await client.query(`
-      INSERT INTO users(username, password) 
+      INSERT INTO users (username, password) 
       VALUES($1, $2) 
       ON CONFLICT (username) DO NOTHING 
-      RETURNING username;`, [username, password]);
+      RETURNING *;`, [username, password]);
 
     return user;
   } catch (error) {

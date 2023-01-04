@@ -102,9 +102,7 @@ async function updateActivity({ id, ...fields }) {
         `);
 
     const activity = await getActivityById(id);
-
-    // console.log(activity);
-
+    
     return activity;
   }
   catch (error) {
