@@ -19,12 +19,6 @@ async function createUser({ username, password }) {
 }
 
 async function getUser({ username, password }) {
-  const {
-    rows: [user],
-  } = await client.query(
-    `
-      SELECT *
-      FROM users
 
   try {
     const { rows: [user] } = await client.query(`
