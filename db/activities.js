@@ -6,9 +6,9 @@ async function createActivity({ name, description }) {
   // eslint-disable-next-line no-useless-catch
   try {
     const { rows: [activity] } = await client.query(`
-    INSERT INTO activities(name, description)
-    VALUES($1, $2)
-    RETURNING *;
+      INSERT INTO activities(name, description)
+      VALUES($1, $2)
+      RETURNING *;
     `, [name, description]);
 
     return activity;
@@ -20,19 +20,33 @@ async function createActivity({ name, description }) {
 async function getAllActivities() {
   // select and return an array of all activities
   try {
-    const { rows: [activity] } = await client.query(`
-    SELECT *
-    FROM activities
-    `); return activity
+    const { rows } = await client.query(`SELECT * FROM activities`);
+
+    return rows;
   } catch (error) {
     throw error;
   }
 }
 
+async function getActivityById(id) {
+  try {
+    const { rows: [activity] } = await client.query(`SELECT * FROM activities WHERE id = ${id}`);
 
-async function getActivityById(id) { }
+    return activity;
+  } catch (error) {
+    throw error;
+  }
+}
 
-async function getActivityByName(name) { }
+async function getActivityByName(name) {
+  try {
+    const { rows: [activity] } = await client.query(`SELECT * FROM activities WHERE name = '${name}'`);
+
+    return activity;
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function attachActivitiesToRoutines(routines) {
   // select and return an array of all activities
@@ -42,6 +56,22 @@ async function updateActivity({ id, ...fields }) {
   // don't try to update the id
   // do update the name and description
   // return the updated activity
+  try {
+    if (fields.name)
+      await client.query(`UPDATE activities SET name = '${fields.name}' WHERE id = ${id}`);
+
+    if (fields.description)
+      await client.query(`UPDATE activities SET description = '${fields.description}' WHERE id = ${id}`);
+
+    const activity = await getActivityById(id);
+
+    // console.log(activity);
+
+    return activity;
+  }
+  catch (error) {
+    throw error;
+  }
 }
 
 module.exports = {

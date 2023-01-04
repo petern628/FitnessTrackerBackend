@@ -1,15 +1,10 @@
 // require in the database adapter functions as you write them (createUser, createActivity...)
 // const { } = require('./');
-const client = require("./client")
-
-const {
-  createUser,
-  createActivity,
-  createRoutine,
-  getRoutinesWithoutActivities,
-  getAllActivities,
-  addActivityToRoutine,
-} = require('./')
+const { createActivity, getAllActivities } = require("./activities");
+const client = require("./client");
+const { createRoutine, getRoutinesWithoutActivities } = require("./routines");
+const { addActivityToRoutine } = require("./routine_activities");
+const { createUser } = require("./users")
 
 async function dropTables() {
   try {
@@ -17,10 +12,10 @@ async function dropTables() {
     // drop all tables, in the correct order
 
     await client.query(`
-  DROP TABLE IF EXISTS routine_activities;
-  DROP TABLE IF EXISTS routines;
-  DROP TABLE IF EXISTS activities;
-  DROP TABLE IF EXISTS users;
+      DROP TABLE IF EXISTS routine_activities;
+      DROP TABLE IF EXISTS routines;
+      DROP TABLE IF EXISTS activities;
+      DROP TABLE IF EXISTS users;
   `);
 
     console.log("Finished dropping tables!");
@@ -29,6 +24,7 @@ async function dropTables() {
     throw error;
   }
 }
+
 async function createTables() {
   try {
     console.log("Starting to build tables...")
@@ -68,10 +64,11 @@ async function createTables() {
     throw error;
   }
 }
+
 /* 
- 
+
 DO NOT CHANGE ANYTHING BELOW. This is default seed data, and will help you start testing, before getting to the tests. 
- 
+
 */
 
 async function createInitialUsers() {
@@ -165,10 +162,12 @@ async function createInitialRoutines() {
 
 async function createInitialRoutineActivities() {
   console.log("starting to create routine_activities...")
+
   const [bicepRoutine, chestRoutine, legRoutine, cardioRoutine] =
-    await getRoutinesWithoutActivities()
+    await getRoutinesWithoutActivities();
+
   const [bicep1, bicep2, chest1, chest2, leg1, leg2, leg3] =
-    await getAllActivities()
+    await getAllActivities();
 
   const routineActivitiesToCreate = [
     {
@@ -229,6 +228,7 @@ async function createInitialRoutineActivities() {
   const routineActivities = await Promise.all(
     routineActivitiesToCreate.map(addActivityToRoutine)
   )
+  
   console.log("routine_activities created: ", routineActivities)
   console.log("Finished creating routine_activities!")
 }

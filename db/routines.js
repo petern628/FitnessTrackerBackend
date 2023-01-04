@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-catch */
 const client = require("./client");
 
 async function createRoutine({ creatorId, isPublic, name, goal }) {
@@ -15,11 +14,7 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
   }
 }
 
-
-async function getRoutineById(id) {
-}
-
-async function getRoutinesWithoutActivities() 
+async function getRoutineById(id) {}
 
 async function getRoutinesWithoutActivities() {
   try {
@@ -33,31 +28,19 @@ async function getRoutinesWithoutActivities() {
   }
 }
 
-async function getAllRoutines() {
-  try {
-    const { rows: routine } = await client.query(`
-    SELECT routines.*,
-    users.username as "creatorName"
-    FROM routines
-    join users on routines."creatorId" = users.id;
-    `);
-    return routine;
-  } catch (error) {
-    throw error;
-  }
-}
+async function getAllRoutines() {}
 
-async function getAllPublicRoutines() { }
+async function getAllPublicRoutines() {}
 
-async function getAllRoutinesByUser({ username }) { }
+async function getAllRoutinesByUser({ username }) {}
 
-async function getPublicRoutinesByUser({ username }) { }
+async function getPublicRoutinesByUser({ username }) {}
 
-async function getPublicRoutinesByActivity({ id }) { }
+async function getPublicRoutinesByActivity({ id }) {}
 
-async function updateRoutine({ id, ...fields }) { }
+async function updateRoutine({ id, ...fields }) {}
 
-async function destroyRoutine(id) { }
+async function destroyRoutine(id) {}
 
 module.exports = {
   getRoutineById,
