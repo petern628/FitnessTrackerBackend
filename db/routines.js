@@ -15,13 +15,11 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
 }
 
 
-async function getRoutineById(id) { }
-
-async function getRoutinesWithoutActivities() {
-  try {
-
-  }
+async function getRoutineById(id) {
 }
+
+
+async function getRoutinesWithoutActivities() 
 
 async function getAllRoutines() { }
 
