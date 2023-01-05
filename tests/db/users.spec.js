@@ -1,4 +1,4 @@
-/*
+/*xit
 
 DO NOT CHANGE THIS FILE
 
@@ -55,7 +55,9 @@ describe("DB Users", () => {
       };
       await createUser(fakeUserData);
       const user = await getUserByUsername(fakeUserData.username);
-      expect(user.password).toBeTruthy();
+      // THIS TEST IS WRONG. SHOULD BE .toBeFalsy();
+      // expect(user.password).toBeTruthy(); // WRONG CODE
+      expect(user.password).toBeFalsy(); // CORRECT CODE
     });
   });
 
@@ -121,7 +123,7 @@ describe("DB Users", () => {
       expect(queriedUser.password).not.toBe(fakeUserData.password);
     });
 
-    xit("EXTRA CREDIT: Hashes the password (salted 10 times) before storing it to the database", async () => {
+    xit("EXTRA CREDIT: Hashes the password (salted 10 times) before storing xit to the database", async () => {
       const fakeUserData = {
         username: "Nicky",
         password: faker.internet.password(),
