@@ -17,7 +17,8 @@ async function createUser({ username, password }) {
       INSERT INTO users (username, password) 
       VALUES($1, $2) 
       ON CONFLICT (username) DO NOTHING 
-      RETURNING *;`, [username, hashedPassword]);
+      RETURNING *;
+      `, [username, hashedPassword]);
     delete user.password;
 
     return user;
