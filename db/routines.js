@@ -1,5 +1,7 @@
 /* eslint-disable no-useless-catch */
+const { Router } = require("express");
 const client = require("./client");
+const { getUserByUsername } = require("./users");
 //const attachActivitiesToRoutines = require("./activities");
 
 
@@ -50,7 +52,6 @@ async function getAllRoutines() {
   JOIN users ON routines."creatorId" = users.id
   `);
 
-    // console.log('____________________________________', routines);
     const { rows: activities } = await client.query(`
   SELECT activities.*, routine_activities.id 
   AS "routineActivityId", routine_activities."routineId", routine_activities.duration, routine_activities.count
@@ -74,8 +75,8 @@ async function getAllRoutines() {
 
 async function getAllPublicRoutines() {
   try {
-    const publicRoutines = await getAllRoutines();
-    publicRoutines = publicRoutines.filter(x => x.isPublic == true);
+    const routines = await getAllRoutines();
+    const publicRoutines = routines.filter(x => x.isPublic == true);
 
     return publicRoutines;
   } catch (error) {
@@ -83,15 +84,57 @@ async function getAllPublicRoutines() {
   }
 }
 
-async function getAllRoutinesByUser({ username }) { }
+async function getAllRoutinesByUser({ username }) {
+  try {
+    // const routines = await getAllRoutines();
+
+    // let userRoutines = [];
+
+    // routines.forEach(async routine => {
+    //   const user = await getUserByUsername(username);
+
+    //   if(user.id === routine.creatorId)
+    //     userRoutines.push(routine);
+    // });
+
+    // return userRoutines;
+  } catch (error) {
+    throw error;
+  }
+}
 
 async function getPublicRoutinesByUser({ username }) { }
 
 async function getPublicRoutinesByActivity({ id }) { }
 
-async function updateRoutine({ id, ...fields }) { }
+async function updateRoutine({ id, ...fields }) {
+  const routine = await getRoutineById(id);
 
-async function destroyRoutine(id) { }
+  // IF THE ISPUBLIC WE ARE PASSING IN IS NOT UNDEFINED
+  // AND IF THE ISPUBLIC WERE ARE PASSING IN DOES NOT EQUAL THE ROUTINE'S CURRENT ISPUBLIC VALUE
+  // UPDATE ISPUBLIC TO THE VALUE PASSED IN
+  if (fields.isPublic !== undefined && fields.isPublic !== routine.isPublic) {
+    routine.isPublic = fields.isPublic;
+    await client.query(`UPDATE routines SET "isPublic" = ${fields.isPublic} WHERE id = ${id}`);
+  }
+
+  if (fields.name) {
+    routine.name = fields.name;
+    await client.query(`UPDATE routines SET name = '${fields.name}' WHERE id = ${id}`);
+  }
+
+  if (fields.goal) {
+    routine.goal = fields.goal;
+    await client.query(`UPDATE routines SET goal = '${fields.goal}' WHERE id = ${id}`);
+  }
+
+  return routine;
+}
+
+async function destroyRoutine(id) {
+  await client.query(`DELETE FROM routine_activities WHERE "routineId" = ${id}`);
+  await client.query(`DELETE FROM routines WHERE id = ${id}`);
+}
 
 module.exports = {
   getRoutineById,
