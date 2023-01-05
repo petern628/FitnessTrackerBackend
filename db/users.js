@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 const client = require("./client");
 
 // database functions
@@ -12,7 +13,7 @@ async function createUser({ username, password }) {
       INSERT INTO users (username, password) 
       VALUES($1, $2) 
       ON CONFLICT (username) DO NOTHING 
-      RETURNING *;`, [username, password]);
+      RETURNING username;`, [username, password]);
 
     return user;
   } catch (error) {
@@ -23,12 +24,15 @@ async function createUser({ username, password }) {
 async function getUser({ username, password }) {
 
   try {
-    const { rows: [user] } = await client.query(`
-    SELECT username, password
-    FROM users;
-    `)
-    console.log(user, "HELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
-    return user;
+    const user = await getUserByUsername(username)
+    if (password == user.password) {
+      const { rows: [user] } = await client.query(`
+  SELECT username, id
+  FROM users
+  WHERE username= $1 AND password = $2
+  `, [username, password])
+      return user
+    }
   } catch (error) {
     throw error;
   }
@@ -38,8 +42,20 @@ async function getUserById(userId) {
 
 }
 
+
 async function getUserByUsername(userName) {
 
+  try {
+    const { rows: [user] } = await client.query(`
+    SELECT *
+    FROM users
+    WHERE username = $1
+    `, [userName]);
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
 }
 
 module.exports = {

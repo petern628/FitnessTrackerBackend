@@ -19,7 +19,8 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
 
 async function getRoutineById(id) {
   try {
-    const { rows: [routine] } = await client.query(`SELECT *
+    const { rows: [routine] } = await client.query(`
+    SELECT *
     FROM routines
      WHERE id = ${id}
      `);
@@ -50,7 +51,6 @@ async function getAllRoutines() {
   JOIN users ON routines."creatorId" = users.id
   `);
 
-    // console.log('____________________________________', routines);
     const { rows: activities } = await client.query(`
   SELECT activities.*, routine_activities.id 
   AS "routineActivityId", routine_activities."routineId", routine_activities.duration, routine_activities.count

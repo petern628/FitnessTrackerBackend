@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 const { getActivityById } = require("./activities");
 const client = require("./client");
 const { getRoutineById } = require("./routines");
@@ -29,11 +30,13 @@ async function addActivityToRoutine({
 
 async function getRoutineActivityById(id) {
   try {
-    const {
-      rows: [activity],
-    } = await client.query(`SELECT * FROM routine_activities WHERE id = ${id}`);
+    const { rows: [routine_activity], } = await client.query(`
+    SELECT * 
+    FROM routine_activities 
+    WHERE id = ${id}
+    `);
 
-    return activity;
+    return routine_activity;
   } catch (error) {
     throw error;
   }
@@ -41,7 +44,11 @@ async function getRoutineActivityById(id) {
 
 async function getRoutineActivitiesByRoutine({ id }) {
   try {
-    const { rows } = await client.query(`SELECT * FROM routine_activities WHERE "routineId" = ${id}`);
+    const { rows } = await client.query(`
+    SELECT * 
+    FROM routine_activities 
+    WHERE "routineId" = ${id}
+    `);
 
     return rows;
   } catch (error) {
@@ -52,10 +59,18 @@ async function getRoutineActivitiesByRoutine({ id }) {
 async function updateRoutineActivity({ id, ...fields }) {
   try {
     if (fields.count)
-      await client.query(`UPDATE routine_activities SET count = ${fields.count} WHERE id = ${id}`);
+      await client.query(`
+      UPDATE routine_activities 
+      SET count = ${fields.count} 
+      WHERE id = ${id}
+      `);
 
     if (fields.duration)
-      await client.query(`UPDATE routine_activities SET duration = ${fields.duration} WHERE id = ${id}`);
+      await client.query(`
+      UPDATE routine_activities 
+      SET duration = ${fields.duration} 
+      WHERE id = ${id}
+      `);
 
     const routineActivity = await getRoutineActivityById(id);
 
@@ -69,7 +84,10 @@ async function destroyRoutineActivity(id) {
   try {
     const routineActivity = await getActivityById(id);
 
-    await client.query(`DELETE FROM routine_activities WHERE id = ${id}`);
+    await client.query(`
+    DELETE FROM routine_activities 
+    WHERE id = ${id}
+    `);
 
     return routineActivity;
   } catch (error) {
