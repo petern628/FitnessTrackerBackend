@@ -82,12 +82,12 @@ async function updateRoutineActivity({ id, ...fields }) {
 
 async function destroyRoutineActivity(id) {
   try {
-    const routineActivity = await getActivityById(id);
 
-    await client.query(`
+    const { rows: [routineActivity] } = await client.query(`
     DELETE FROM routine_activities 
-    WHERE id = ${id}
-    `);
+    WHERE id = $1
+    RETURNING * 
+    `, [id]);
 
     return routineActivity;
   } catch (error) {
@@ -99,7 +99,7 @@ async function canEditRoutineActivity(routineActivityId, userId) {
   const routineActivity = await getRoutineActivityById(routineActivityId);
   const routine = await getRoutineById(routineActivity.routineId);
 
-  if (routine.id === userId)
+  if (routine.creatorId === userId)
     return true;
 
   return false;
