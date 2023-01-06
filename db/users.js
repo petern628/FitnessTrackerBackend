@@ -1,4 +1,6 @@
+/* eslint-disable no-useless-catch */
 const client = require("./client");
+const bcrypt = require("bcrypt");
 
 // database functions
 
@@ -7,12 +9,15 @@ const client = require("./client");
 // MAN HOW YA'LL GONNA NOT RETURN THE ID IN THIS AND
 // THEN  USE IT ON A TEST CMON BRUH
 async function createUser({ username, password }) {
+  const SALT_COUNT = 10;
+  const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
+
   try {
     const { rows: [user] } = await client.query(`
       INSERT INTO users (username, password) 
       VALUES($1, $2) 
       ON CONFLICT (username) DO NOTHING 
-      RETURNING id, username;`, [username, password]);
+      RETURNING *;`, [username, password]);
 
     return user;
   } catch (error) {
@@ -22,39 +27,28 @@ async function createUser({ username, password }) {
 
 async function getUser({ username, password }) {
 
-  try {
-    const { rows: [user] } = await client.query(`SELECT * FROM users WHERE username = '${username}'`);
-
-    if (user.password === password) {
-      user.password = null;
-      return user;
-    }
-    else {
-      return null;
-    }
-  } catch (error) {
-    throw error;
+  if (!username || !password) {
+    return;
   }
-}
 
-async function getUserById(id) {
   try {
-    const { rows: [user] } = await client.query(`SELECT id, username FROM users WHERE id = '${id}'`);
-
+    const { rows: [user] } = await client.query(`
+    SELECT username, password
+    FROM users;
+    `)
+    console.log(user, "HELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
     return user;
   } catch (error) {
     throw error;
   }
 }
 
-async function getUserByUsername(username) {
-  try {
-    const { rows: [user] } = await client.query(`SELECT id, username FROM users WHERE username = '${username}'`);
+async function getUserById(userId) {
 
-    return user;
-  } catch (error) {
-    throw error;
-  }
+}
+
+async function getUserByUsername(userName) {
+
 }
 
 module.exports = {

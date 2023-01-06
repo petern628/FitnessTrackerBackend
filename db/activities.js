@@ -21,7 +21,8 @@ async function createActivity({ name, description }) {
 async function getAllActivities() {
   // select and return an array of all activities
   try {
-    const { rows } = await client.query(`SELECT *
+    const { rows } = await client.query(`
+    SELECT *
      FROM activities
      `);
 
@@ -33,7 +34,8 @@ async function getAllActivities() {
 
 async function getActivityById(id) {
   try {
-    const { rows: [activity] } = await client.query(`SELECT *
+    const { rows: [activity] } = await client.query(`
+    SELECT *
      FROM activities
       WHERE id = ${id}
       `);
@@ -46,7 +48,8 @@ async function getActivityById(id) {
 
 async function getActivityByName(name) {
   try {
-    const { rows: [activity] } = await client.query(`SELECT *
+    const { rows: [activity] } = await client.query(`
+    SELECT *
      FROM activities
       WHERE name = '${name}'
       `);
@@ -90,19 +93,21 @@ async function updateActivity({ id, ...fields }) {
   // return the updated activity
   try {
     if (fields.name)
-      await client.query(`UPDATE activities
-       SET name = '${fields.name}'
-        WHERE id = ${id}
-        `);
+      await client.query(`
+      UPDATE activities
+      SET name = '${fields.name}'
+      WHERE id = ${id}
+      `);
 
     if (fields.description)
-      await client.query(`UPDATE activities
-       SET description = '${fields.description}'
-        WHERE id = ${id}
-        `);
+      await client.query(`
+      UPDATE activities
+      SET description = '${fields.description}'
+      WHERE id = ${id}
+      `);
 
     const activity = await getActivityById(id);
-    
+
     return activity;
   }
   catch (error) {
