@@ -17,7 +17,9 @@ async function createUser({ username, password }) {
       INSERT INTO users (username, password) 
       VALUES($1, $2) 
       ON CONFLICT (username) DO NOTHING 
-      RETURNING *;`, [username, password]);
+      RETURNING *;
+      `, [username, hashedPassword]);
+    delete user.password;
 
     return user;
   } catch (error) {
@@ -32,23 +34,51 @@ async function getUser({ username, password }) {
   }
 
   try {
-    const { rows: [user] } = await client.query(`
-    SELECT username, password
-    FROM users;
-    `)
-    console.log(user, "HELOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
-    return user;
+    const user = await getUserByUsername(username)
+    const hashedPassword = user.password;
+    let passwordsMatch = await bcrypt.compare(password, hashedPassword);
+
+    if (passwordsMatch) {
+      delete user.password;
+      return user;
+    }
+    else {
+      return;
+    }
   } catch (error) {
     throw error;
   }
 }
 
 async function getUserById(userId) {
+  try {
+    const { rows: [user], } = await client.query(`
+  SELECT username, id
+  FROM users
+  WHERE id = ${userId};
+  `,);
 
+    delete user.password;
+    return user;
+  } catch (error) {
+    throw error;
+  }
 }
+
 
 async function getUserByUsername(userName) {
 
+  try {
+    const { rows: [user] } = await client.query(`
+    SELECT *
+    FROM users
+    WHERE username = $1
+    `, [userName]);
+
+    return user;
+  } catch (error) {
+    throw error;
+  }
 }
 
 module.exports = {

@@ -1,6 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
+const PORT = 3000;
+const express = require('express');
+const server = express();
+
+server.listen(PORT, () => {
+  console.log('The server is up on port', PORT)
+});
+
 // GET /api/health
 router.get('/health', async (req, res, next) => {
 });
