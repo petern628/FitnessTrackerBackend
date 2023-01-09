@@ -3,7 +3,8 @@ const express = require("express");
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
-const { getUserByUsername, createUser } = require('../db');
+const bcrypt = require("bcrypt");
+const { getUserByUsername, createUser, getUserById, getPublicRoutinesByUser } = require('../db');
 
 // POST /api/users/register
 
@@ -15,8 +16,15 @@ usersRouter.post('/register', async (req, res, next) => {
 
         if (_user) {
             next({
-                name: 'UserExistsError',
-                message: 'A user by that username already exists'
+                message: `User ${username} is already taken.`,
+                name: 'UserTakenError'
+            });
+        }
+
+        if (password.length < 8) {
+            next({
+                name: 'PasswordTooShortError',
+                message: 'Password Too Short!'
             });
         }
 
@@ -27,22 +35,26 @@ usersRouter.post('/register', async (req, res, next) => {
 
         const token = jwt.sign({
             id: user.id,
-            username
+            username: user.username
         }, JWT_SECRET, {
             expiresIn: '1w'
         });
 
         res.send({
             message: "thank you for signing up",
-            token
+            token,
+            user
         });
-    } catch ({ name, message }) {
-        next({ name, message })
+
+    } catch (error) {
+        next(error);
     }
 });
 
 // POST /api/users/login
-
+// × Logs in the user. Requires username and password, and verifies that hashed login password matches the saved hashed password. (59 ms)
+// × Logs in the user and returns the user back to us (55 ms)
+// × Returns a JSON Web Token. Stores the id and username in the token. (55 ms)
 usersRouter.post('/login', async (req, res, next) => {
     const { username, password } = req.body;
 
@@ -57,7 +69,7 @@ usersRouter.post('/login', async (req, res, next) => {
     try {
         const user = await getUserByUsername(username);
 
-        if (user && user.password == password) {
+        if (user && bcrypt.compare(user.password, password)) {
             // create token & return to user
             const token = jwt.sign({
                 id: user.id,
@@ -65,7 +77,7 @@ usersRouter.post('/login', async (req, res, next) => {
             }, JWT_SECRET
             );
 
-            res.send({ message: "you're logged in!", token });
+            res.send({ message: "you're logged in!", user, token });
         } else {
             next({
                 name: 'IncorrectCredentialsError',
@@ -73,10 +85,48 @@ usersRouter.post('/login', async (req, res, next) => {
             });
         }
     } catch (error) {
-        console.log(error);
         next(error);
     }
 });
 
+// × sends back users data if valid token is supplied in header (57 ms)
+// × rejects requests with no valid token (3 ms)
+usersRouter.get('/me', async (req, res, next) => {
+    const prefix = 'Bearer ';
+    const auth = req.header('Authorization');
+
+    if (!auth) { // nothing to see here
+        res.statusCode = 401;
+        next({
+            name: 'UnauthorizedError',
+            message: 'You must be logged in to perform this action'
+        })
+    } else if (auth.startsWith(prefix)) {
+        const token = auth.slice(prefix.length);
+
+        try {
+            const { id } = jwt.verify(token, JWT_SECRET);
+            
+            if (id) {
+                const user = await getUserById(id);
+                res.send(user);
+            }
+        } catch ({ name, message }) {
+            next({ name, message });
+        }
+    }
+});
+
+// × Gets a list of public routines for a particular user. (123 ms)
+// × gets a list of all routines for the logged in user (57 ms)
+usersRouter.get('/:username/routines', async (req, res, next) => {
+    const { username } = req.params;
+    const userRoutines = await getPublicRoutinesByUser(username);
+
+    console.log(`dem username be ${username} and here dem rounteins:!`)
+    console.log(userRoutines);
+
+    res.send(userRoutines);
+});
 
 module.exports = usersRouter;

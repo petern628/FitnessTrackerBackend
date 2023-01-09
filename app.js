@@ -2,8 +2,9 @@ require("dotenv").config()
 
 const express = require("express")
 const app = express()
-var cors = require('cors')
+app.use(express.json())
 
+var cors = require('cors')
 app.use(cors())
 
 const router = require('./api');

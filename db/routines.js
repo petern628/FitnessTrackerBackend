@@ -103,7 +103,18 @@ async function getAllRoutinesByUser({ username }) {
   }
 }
 
-async function getPublicRoutinesByUser({ username }) { }
+async function getPublicRoutinesByUser({ username }) {
+  const publicRoutines = await getAllPublicRoutines();
+
+  // console.log('the big ol list dem routien ss asd is')
+  // console.log(publicRoutines);
+
+  console.log(publicRoutines[0].activities[0]);
+
+  const userPublicRoutines = publicRoutines.filter(x => x.creatorName === username);
+
+  return userPublicRoutines;
+}
 
 async function getPublicRoutinesByActivity({ id }) { }
 
