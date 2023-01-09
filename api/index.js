@@ -1,8 +1,14 @@
+/* eslint-disable no-useless-catch */
 const express = require('express');
 const router = express.Router();
 
 // GET /api/health
 router.get('/health', async (req, res, next) => {
+    try {
+        res.send({ message: "server is healthy" });
+    } catch (error) {
+        throw error;
+    }
 });
 
 // ROUTER: /api/users

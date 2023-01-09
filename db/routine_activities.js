@@ -1,5 +1,4 @@
 /* eslint-disable no-useless-catch */
-const { getActivityById } = require("./activities");
 const client = require("./client");
 const { getRoutineById } = require("./routines");
 
