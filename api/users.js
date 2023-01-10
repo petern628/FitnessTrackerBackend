@@ -35,7 +35,7 @@ usersRouter.post('/register', async (req, res, next) => {
 
         const token = jwt.sign({
             id: user.id,
-            username: user.username
+            username
         }, JWT_SECRET, {
             expiresIn: '1w'
         });
