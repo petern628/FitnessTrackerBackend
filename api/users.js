@@ -3,12 +3,49 @@ const express = require("express");
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
-const { getUserByUsername, createUser } = require('../db');
+const bcrypt = require("bcrypt");
+const { getUserByUsername, createUser, getUserById, getPublicRoutinesByUser, getAllPublicRoutines, getAllRoutinesByUser } = require('../db');
 
 // POST /api/users/register
 
-// POST /api/users/login
+usersRouter.post('/register', async (req, res, next) => {
+    const { username, password } = req.body;
 
+    try {
+        const _user = await getUserByUsername(username);
+
+        if (_user) {
+            next({
+                name: 'UserExistsError',
+                message: 'A user by that username already exists'
+            });
+        }
+
+        const user = await createUser({
+            username,
+            password,
+        });
+
+        const token = jwt.sign({
+            id: user.id,
+            username
+        }, JWT_SECRET, {
+            expiresIn: '1w'
+        });
+
+        res.send({
+            message: "thank you for signing up",
+            token
+        });
+    } catch ({ name, message }) {
+        next({ name, message })
+    }
+});
+
+// POST /api/users/login
+// × Logs in the user. Requires username and password, and verifies that hashed login password matches the saved hashed password. (59 ms)
+// × Logs in the user and returns the user back to us (55 ms)
+// × Returns a JSON Web Token. Stores the id and username in the token. (55 ms)
 usersRouter.post('/login', async (req, res, next) => {
     const { username, password } = req.body;
 
@@ -23,7 +60,7 @@ usersRouter.post('/login', async (req, res, next) => {
     try {
         const user = await getUserByUsername(username);
 
-        if (user && user.password == password) {
+        if (user && bcrypt.compare(user.password, password)) {
             // create token & return to user
             const token = jwt.sign({
                 id: user.id,
@@ -31,7 +68,7 @@ usersRouter.post('/login', async (req, res, next) => {
             }, process.env.JWT_SECRET
             );
 
-            res.send({ message: "you're logged in!", token });
+            res.send({ message: "you're logged in!", user, token });
         } else {
             next({
                 name: 'IncorrectCredentialsError',
@@ -39,24 +76,7 @@ usersRouter.post('/login', async (req, res, next) => {
             });
         }
     } catch (error) {
-        console.log(error);
         next(error);
     }
 });
 
-// GET /api/users/me
-
-            res.send({ message: "you're logged in!", token });
-        } else {
-            next({
-                name: 'IncorrectCredentialsError',
-                message: 'Username or password is incorrect'
-            });
-        }
-    } catch (error) {
-        console.log(error);
-        next(error);
-    }
-});
-
-module.exports = router;
