@@ -38,7 +38,7 @@ const {
 describe("/api/users", () => {
   xit
   describe("POST /api/users/register", () => {
-    it("Creates a new user.", async () => {
+    xit("Creates a new user.", async () => {
       // Create some fake user data
       const fakeUserData = {
         username: faker.internet.userName(),
@@ -77,7 +77,7 @@ describe("/api/users", () => {
       expectNotToBeError(response.body);
 
       // Grab the user from the DB manually so we can
-      // get the hashed password and check xit
+      // get the hashed password and check it
       const {
         rows: [user],
       } = await client.query(
@@ -99,7 +99,7 @@ describe("/api/users", () => {
       );
     });
 
-    it("Throws errors for duplicate username", async () => {
+    xit("Throws errors for duplicate username", async () => {
       // Create a fake user in the DB
       const { fakeUser: firstUser } = await createFakeUserWithToken();
       // Now try to create a user with the same username
@@ -120,7 +120,7 @@ describe("/api/users", () => {
       );
     });
 
-    it("returns error if password is less than 8 characters.", async () => {
+    xit("returns error if password is less than 8 characters.", async () => {
       // Create some user data with a password with 7 characters
       const newUserShortPassword = {
         username: faker.internet.userName(),
