@@ -75,7 +75,7 @@ describe("/api/users", () => {
       expectNotToBeError(response.body);
 
       // Grab the user from the DB manually so we can
-      // get the hashed password and check it
+      // get the hashed password and check xit
       const {
         rows: [user],
       } = await client.query(
@@ -97,7 +97,7 @@ describe("/api/users", () => {
       );
     });
 
-    xit("Throws errors for duplicate username", async () => {
+    it("Throws errors for duplicate username", async () => {
       // Create a fake user in the DB
       const { fakeUser: firstUser } = await createFakeUserWithToken();
       // Now try to create a user with the same username
@@ -118,7 +118,7 @@ describe("/api/users", () => {
       );
     });
 
-    xit("returns error if password is less than 8 characters.", async () => {
+    it("returns error if password is less than 8 characters.", async () => {
       // Create some user data with a password with 7 characters
       const newUserShortPassword = {
         username: faker.internet.userName(),

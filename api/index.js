@@ -1,9 +1,10 @@
+/* eslint-disable no-useless-catch */
 const express = require('express');
 const router = express.Router();
 
 // GET /api/health
-////router.get('/health', async (req, res, next) => {
-//});
+router.get('/health', async (req, res, next) => {
+});
 
 // ROUTER: /api/users
 const usersRouter = require('./users');

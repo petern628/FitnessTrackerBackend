@@ -7,40 +7,6 @@ const { getUserByUsername, createUser } = require('../db');
 
 // POST /api/users/register
 
-usersRouter.post('/register', async (req, res, next) => {
-    const { username, password } = req.body;
-
-    try {
-        const _user = await getUserByUsername(username);
-
-        if (_user) {
-            next({
-                name: 'UserExistsError',
-                message: 'A user by that username already exists'
-            });
-        }
-
-        const user = await createUser({
-            username,
-            password,
-        });
-
-        const token = jwt.sign({
-            id: user.id,
-            username
-        }, JWT_SECRET, {
-            expiresIn: '1w'
-        });
-
-        res.send({
-            message: "thank you for signing up",
-            token
-        });
-    } catch ({ name, message }) {
-        next({ name, message })
-    }
-});
-
 // POST /api/users/login
 
 usersRouter.post('/login', async (req, res, next) => {
@@ -62,7 +28,7 @@ usersRouter.post('/login', async (req, res, next) => {
             const token = jwt.sign({
                 id: user.id,
                 username
-            }, JWT_SECRET
+            }, process.env.JWT_SECRET
             );
 
             res.send({ message: "you're logged in!", token });
@@ -78,5 +44,19 @@ usersRouter.post('/login', async (req, res, next) => {
     }
 });
 
+// GET /api/users/me
 
-module.exports = usersRouter;
+            res.send({ message: "you're logged in!", token });
+        } else {
+            next({
+                name: 'IncorrectCredentialsError',
+                message: 'Username or password is incorrect'
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+});
+
+module.exports = router;
