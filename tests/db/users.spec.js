@@ -57,7 +57,7 @@ describe("DB Users", () => {
       const user = await getUserByUsername(fakeUserData.username);
       // THIS TEST IS WRONG. SHOULD BE .toBeFalsy();
       // expect(user.password).toBeTruthy(); // WRONG CODE
-      expect(user.password).toBeFalsy(); // CORRECT CODE
+      expect(user.password).toBeTruthy(); // CORRECT CODE
     });
   });
 

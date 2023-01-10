@@ -1,8 +1,14 @@
+/* eslint-disable no-useless-catch */
 const express = require('express');
 const router = express.Router();
 
 // GET /api/health
 router.get('/health', async (req, res, next) => {
+    try {
+        res.send({ message: "server is healthy" });
+    } catch (error) {
+        throw error;
+    }
 });
 
 // ROUTER: /api/users
@@ -20,13 +26,5 @@ router.use('/routines', routinesRouter);
 // ROUTER: /api/routine_activities
 const routineActivitiesRouter = require('./routineActivities');
 router.use('/routine_activities', routineActivitiesRouter);
-
-router.use((error, req, res, next) => {
-    res.send({
-        message: error.message,
-        name: error.name,
-        error: error.message
-    });
-});
 
 module.exports = router;

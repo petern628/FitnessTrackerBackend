@@ -75,7 +75,7 @@ async function getUserByUsername(userName) {
     WHERE username = $1
     `, [userName]);
 
-    return user;
+    return (user);
   } catch (error) {
     throw error;
   }
