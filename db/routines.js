@@ -86,34 +86,25 @@ async function getAllPublicRoutines() {
 
 async function getAllRoutinesByUser({ username }) {
   try {
-    // const routines = await getAllRoutines();
-
-    // let userRoutines = [];
-
-    // routines.forEach(async routine => {
-    //   const user = await getUserByUsername(username);
-
-    //   if(user.id === routine.creatorId)
-    //     userRoutines.push(routine);
-    // });
-
-    // return userRoutines;
+    const routines = await getAllRoutines();    
+    const userRoutines = routines.filter(x => x.creatorName === username);
+    
+    return userRoutines;
   } catch (error) {
     throw error;
   }
 }
+let x = 1;
 
 async function getPublicRoutinesByUser({ username }) {
-  const publicRoutines = await getAllPublicRoutines();
+  try {
+    const publicRoutines = await getAllPublicRoutines();    
+    const userPublicRoutines = publicRoutines.filter(x => x.creatorName === username);
 
-  // console.log('the big ol list dem routien ss asd is')
-  // console.log(publicRoutines);
-
-  console.log(publicRoutines[0].activities[0]);
-
-  const userPublicRoutines = publicRoutines.filter(x => x.creatorName === username);
-
-  return userPublicRoutines;
+    return userPublicRoutines;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getPublicRoutinesByActivity({ id }) { }

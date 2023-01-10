@@ -4,7 +4,7 @@ const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = process.env;
 const bcrypt = require("bcrypt");
-const { getUserByUsername, createUser, getUserById, getPublicRoutinesByUser } = require('../db');
+const { getUserByUsername, createUser, getUserById, getPublicRoutinesByUser, getAllPublicRoutines, getAllRoutinesByUser } = require('../db');
 
 // POST /api/users/register
 
@@ -95,7 +95,7 @@ usersRouter.get('/me', async (req, res, next) => {
     const prefix = 'Bearer ';
     const auth = req.header('Authorization');
 
-    if (!auth) { // nothing to see here
+    if (!auth) {
         res.statusCode = 401;
         next({
             name: 'UnauthorizedError',
@@ -106,7 +106,7 @@ usersRouter.get('/me', async (req, res, next) => {
 
         try {
             const { id } = jwt.verify(token, JWT_SECRET);
-            
+
             if (id) {
                 const user = await getUserById(id);
                 res.send(user);
@@ -121,12 +121,11 @@ usersRouter.get('/me', async (req, res, next) => {
 // × gets a list of all routines for the logged in user (57 ms)
 usersRouter.get('/:username/routines', async (req, res, next) => {
     const { username } = req.params;
-    const userRoutines = await getPublicRoutinesByUser(username);
+    const prefix = 'Bearer ';
+    const auth = req.header('Authorization');
 
-    console.log(`dem username be ${username} and here dem rounteins:!`)
-    console.log(userRoutines);
-
-    res.send(userRoutines);
+    const userPublicRoutines = await getPublicRoutinesByUser({ username });
+    res.send(userPublicRoutines);
 });
 
 module.exports = usersRouter;
